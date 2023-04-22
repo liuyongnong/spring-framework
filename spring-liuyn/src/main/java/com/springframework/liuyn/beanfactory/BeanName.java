@@ -24,6 +24,10 @@ public class BeanName  {
 		return name;
 	}
 
+	public String getUserName(){
+		return user.getName();
+	}
+
 	public void setName(String name) {
 		this.name = name;
 	}

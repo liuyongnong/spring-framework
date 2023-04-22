@@ -1,10 +1,14 @@
 package com.springframework.liuyn.beanfactory;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class User {
+
+	@Value(value = "10")
 	private int age ;
+	@Value(value = "testName")
 	private String name;
 	private int sex;
 

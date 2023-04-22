@@ -72,6 +72,13 @@ final class PostProcessorRegistrationDelegate {
 		// to ensure that your proposal does not result in a breaking change:
 		// https://github.com/spring-projects/spring-framework/issues?q=PostProcessorRegistrationDelegate+is%3Aclosed+label%3A%22status%3A+declined%22
 
+		/**
+		 * 1.对beanFactory进行判断，如果容器没有实现BeanDefinitionRegistry接口，则直接执行BeanFactoryPostProcessors.postProcessBeanFactory调用
+		 * 2.如果beanFactory是一个BeanDefinitionRegistry可以进行beanDefinition注册，则进行一下判断
+		 * 	  这里新建了两个List,regularPostProcessors和registryProcessors
+		 * 	  分别用来存放普通的beanFactoryPostProcessor和实现了BeanDefinitionRegistryPostProcessor接口的beanFactoryPostProcessor
+		 * 	  如果实现了BeanDefinitionRegistryPostProcessor接口，可以动态的注册beanDefinition*
+		 */
 		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
 		Set<String> processedBeans = new HashSet<>();
 
@@ -98,6 +105,7 @@ final class PostProcessorRegistrationDelegate {
 			// PriorityOrdered, Ordered, and the rest.
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
+			//首先处理实现了BeanDefinitionRegistryPostProcessors和PriorityOrdered接口的beanFactoryPostProcessor
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
 			String[] postProcessorNames =
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
@@ -107,11 +115,13 @@ final class PostProcessorRegistrationDelegate {
 					processedBeans.add(ppName);
 				}
 			}
+			//Configuration等注解在这里处理
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
 			registryProcessors.addAll(currentRegistryProcessors);
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry, beanFactory.getApplicationStartup());
 			currentRegistryProcessors.clear();
 
+			//接下来处理实现了BeanDefinitionRegistryPostProcessors和Order接口的beanFactoryPostProcessors
 			// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
 			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
@@ -125,6 +135,7 @@ final class PostProcessorRegistrationDelegate {
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry, beanFactory.getApplicationStartup());
 			currentRegistryProcessors.clear();
 
+			//最后处理实现了BeanDefinitionRegistryPostProcessors没有实现其它接口的beanFactoryPostProcessor
 			// Finally, invoke all other BeanDefinitionRegistryPostProcessors until no further ones appear.
 			boolean reiterate = true;
 			while (reiterate) {
@@ -143,6 +154,8 @@ final class PostProcessorRegistrationDelegate {
 				currentRegistryProcessors.clear();
 			}
 
+			//注:上述的三次调用beanFactory都是registry
+			//现在处理所有的beanFactoryPostProcess实现类
 			// Now, invoke the postProcessBeanFactory callback of all processors handled so far.
 			invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
 			invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);

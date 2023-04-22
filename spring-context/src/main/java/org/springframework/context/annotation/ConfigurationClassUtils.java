@@ -121,7 +121,7 @@ abstract class ConfigurationClassUtils {
 				return false;
 			}
 		}
-
+		//判断该类是不是被注解@Configuration注释，proxyBeanMethods的属性是不是false，不是的话属性设置configurationClass属性设置full,else if逻辑设置lite
 		Map<String, Object> config = metadata.getAnnotationAttributes(Configuration.class.getName());
 		if (config != null && !Boolean.FALSE.equals(config.get("proxyBeanMethods"))) {
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);

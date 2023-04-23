@@ -6,10 +6,10 @@ pluginManagement {
 	}
 }
 
-plugins {
-	id "com.gradle.enterprise" version "3.12.1"
-	id "io.spring.ge.conventions" version "0.0.13"
-}
+//plugins {
+//	id "com.gradle.enterprise" version "3.12.1"
+//	id "io.spring.ge.conventions" version "0.0.13"
+//}
 
 include "spring-aop"
 include "spring-aspects"
@@ -41,18 +41,18 @@ rootProject.children.each {project ->
 	project.buildFileName = "${project.name}.gradle"
 }
 
-settings.gradle.projectsLoaded {
-	gradleEnterprise {
-		buildScan {
-			File buildDir = settings.gradle.rootProject.getBuildDir()
-			buildDir.mkdirs()
-			new File(buildDir, "build-scan-uri.txt").text = "(build scan not generated)"
-			buildScanPublished { scan ->
-				if (buildDir.exists()) {
-					new File(buildDir, "build-scan-uri.txt").text = "${scan.buildScanUri}\n"
-				}
-			}
-		}
-	}
-}
+//settings.gradle.projectsLoaded {
+//	gradleEnterprise {
+//		buildScan {
+//			File buildDir = settings.gradle.rootProject.getBuildDir()
+//			buildDir.mkdirs()
+//			new File(buildDir, "build-scan-uri.txt").text = "(build scan not generated)"
+//			buildScanPublished { scan ->
+//				if (buildDir.exists()) {
+//					new File(buildDir, "build-scan-uri.txt").text = "${scan.buildScanUri}\n"
+//				}
+//			}
+//		}
+//	}
+//}
 

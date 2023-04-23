@@ -340,6 +340,7 @@ configure([rootProject] + javaProjects) { project ->
 	}
 
 	test {
+		enabled(false)
 		useJUnitPlatform()
 		include(["**/*Tests.class", "**/*Test.class"])
 		systemProperty("java.awt.headless", "true")

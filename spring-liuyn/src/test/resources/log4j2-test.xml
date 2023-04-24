@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configuration>
+
+<Configuration status="warn" name="xml_configuration">
+
+	<Properties>
+		<Property name="basePath">./log/</Property>
+	</Properties>
+
+	<Appenders>
+		<RollingFile name="fileLogger" fileName="${basePath}app.log"
+					 filePattern="${basePath}app_%d{yyyyMMdd}.log.gz">
+
+			<PatternLayout
+					pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%t] [%c] [%M] [%l] - %msg%n" />
+
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"  modulate="true" />
+			</Policies>
+		</RollingFile>
+
+
+		<Console name="consoleLogger" target="SYSTEM_OUT">
+			<PatternLayout
+					pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %level [%t] [%c] [%M] [%l] - %msg%n" />
+		</Console>
+
+		<Routing name="RoutingLogger">
+			<!-- Condition is - if isDevEnv VM argument is true (-isDevEnv=true),
+             then log messages in console else log messages in file -->
+			<Script name="RoutingCondition" language="JavaScript"><![CDATA[
+       var imports = new JavaImporter(java.lang);
+       with (imports) {
+        System.getProperty("isDevEnv") == "true" ? "console" : "file";
+       }]]>
+			</Script>
+			<Routes>
+				<Route ref="consoleLogger" key="console" />
+				<Route ref="fileLogger" key="file" />
+			</Routes>
+		</Routing>
+
+	</Appenders>
+
+	<Loggers>
+		<Logger name="mypackage" level="info" additivity="false">
+			<appender-ref ref="RoutingLogger" />
+		</Logger>
+		<Root level="error" additivity="false">
+			<appender-ref ref="RoutingLogger" />
+		</Root>
+	</Loggers>
+</Configuration>

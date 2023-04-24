@@ -170,7 +170,7 @@ class ConfigurationClassParser {
 		for (BeanDefinitionHolder holder : configCandidates) {
 			BeanDefinition bd = holder.getBeanDefinition();
 			try {
-				//如果是AnnotatedBeanDefinition ，则进行解析
+				//如果是AnnotatedBeanDefinition ，则进行解析，里面会处理@Import,@Bean等注解
 				if (bd instanceof AnnotatedBeanDefinition) {
 					parse(((AnnotatedBeanDefinition) bd).getMetadata(), holder.getBeanName());
 				}
@@ -311,10 +311,10 @@ class ConfigurationClassParser {
 
 		//以下是处理@Import,@ImportResource，@Bean等注解
 
-		// Process any @Import annotations
+		// Process any @Import annotations 处理Import注解，解析后把解析后的class放进configClass
 		processImports(configClass, sourceClass, getImports(sourceClass), filter, true);
 
-		// Process any @ImportResource annotations
+		// Process any @ImportResource annotations 处理@ImportResource注解，解析后把解析后的class放进configClass
 		AnnotationAttributes importResource =
 				AnnotationConfigUtils.attributesFor(sourceClass.getMetadata(), ImportResource.class);
 		if (importResource != null) {
@@ -326,16 +326,16 @@ class ConfigurationClassParser {
 			}
 		}
 
-		// Process individual @Bean methods
+		// Process individual @Bean methods 处理@Bean注解，解析后把解析后的class放进configClass
 		Set<MethodMetadata> beanMethods = retrieveBeanMethodMetadata(sourceClass);
 		for (MethodMetadata methodMetadata : beanMethods) {
 			configClass.addBeanMethod(new BeanMethod(methodMetadata, configClass));
 		}
 
-		// Process default methods on interfaces
+		// Process default methods on interfaces 如果是接口的话，递归处理接口的默认方法上的@Bean并添加到configClass
 		processInterfaces(configClass, sourceClass);
 
-		//处理父类
+		//处理父类,如果由父类的话处理父类，没有的话则返回
 		// Process superclass, if any
 		if (sourceClass.getMetadata().hasSuperClass()) {
 			String superclass = sourceClass.getMetadata().getSuperClassName();

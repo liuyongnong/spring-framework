@@ -568,11 +568,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 				/**
 				 * 按照顺序注册一系列的beanPostProcess,先注册实现了PriorityOrdered，然后再注册实现了Order接口的，
-				 * 然后再注册常规的BeanPostProcess，最后再注册内部的internal BeanPostProcessors
+				 * 然后再注册常规的BeanPostProcess，最后再注册内部的internal BeanPostProcessors，此处只是注册了BeanPostProcess，真正的调用逻辑是在创建Bean的时候
 				 *
 				 */
 				// Register bean processors that intercept bean creation.
 				registerBeanPostProcessors(beanFactory);
+
+
 				beanPostProcess.end();
 
 				//初始化消息
@@ -591,7 +593,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				// Check for listener beans and register them.
 				registerListeners();
 
-				//初始化剩下的单例
+				//到这个阶段BeanFactory的处理就结束了，正式的初始化非懒加载的Bean
 				// Instantiate all remaining (non-lazy-init) singletons.
 				finishBeanFactoryInitialization(beanFactory);
 

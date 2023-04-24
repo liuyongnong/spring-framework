@@ -16,6 +16,10 @@ dependencies {
     api(project(":spring-expression"))
     api(project(":spring-context"))
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testImplementation(testFixtures(project(":spring-beans")))
+    testImplementation(testFixtures(project(":spring-context")))
+    testImplementation(testFixtures(project(":spring-core")))
+    testImplementation(testFixtures(project(":spring-web")))
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 

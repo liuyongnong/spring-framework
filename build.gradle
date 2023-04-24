@@ -340,9 +340,9 @@ configure([rootProject] + javaProjects) { project ->
 	}
 
 	test {
-		enabled(false)
+		//enabled(false)
 		useJUnitPlatform()
-		include(["**/*Tests.class", "**/*Test.class"])
+		include(["org.springframework.liuyn.*Tests.class", "org.springframework.liuyn.*Test.class"])
 		systemProperty("java.awt.headless", "true")
 		systemProperty("testGroups", project.properties.get("testGroups"))
 		systemProperty("io.netty.leakDetection.level", "paranoid")

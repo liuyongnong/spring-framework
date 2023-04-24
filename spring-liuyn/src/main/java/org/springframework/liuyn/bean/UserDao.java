@@ -1,8 +1,17 @@
-package org.springframework.bean;
+package org.springframework.liuyn.bean;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 public class UserDao {
+
+    @Value("testName")
     private String userName;
+
+    @Value("java")
     private String work;
+
+    @Value("10")
     private int age;
 
     public String getUserName() {
@@ -27,5 +36,14 @@ public class UserDao {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDao{" +
+                "userName='" + userName + '\'' +
+                ", work='" + work + '\'' +
+                ", age=" + age +
+                '}';
     }
 }

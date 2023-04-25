@@ -340,9 +340,8 @@ configure([rootProject] + javaProjects) { project ->
 	}
 
 	test {
-		//enabled(false)
 		useJUnitPlatform()
-		include(["org.springframework.liuyn.*Tests.class", "org.springframework.liuyn.*Test.class"])
+		include(["org/springframework/liuyn/**/*Tests.class", "org/springframework/liuyn/**/*Test.class"])
 		systemProperty("java.awt.headless", "true")
 		systemProperty("testGroups", project.properties.get("testGroups"))
 		systemProperty("io.netty.leakDetection.level", "paranoid")
@@ -437,6 +436,7 @@ configure(rootProject) {
 
 	tasks.withType(JavaCompile) {
 		options.encoding = "UTF-8"
+		options.incremental = true
 	}
 
 //	tasks.named("checkstyleNohttp").configure {

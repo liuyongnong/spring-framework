@@ -253,8 +253,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		Object beanInstance;
 
 		// Eagerly check singleton cache for manually registered singletons.
-		//先检查单例缓存手动的注册单例
 		Object sharedInstance = getSingleton(beanName);
+
+		//先检查单例缓存里面有没有初始化好的实例，没有的话在else 逻辑里面处理创建bean
 		if (sharedInstance != null && args == null) {
 			if (logger.isTraceEnabled()) {
 				if (isSingletonCurrentlyInCreation(beanName)) {
@@ -265,6 +266,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
 				}
 			}
+			//这里获取bean示例，处理FactoryBean的情况
 			beanInstance = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		}
 
@@ -275,6 +277,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				throw new BeanCurrentlyInCreationException(beanName);
 			}
 
+			//检查是否parentBeanFactory里面是否有，有的话让父容器去构造
 			// Check if bean definition exists in this factory.
 			BeanFactory parentBeanFactory = getParentBeanFactory();
 			if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
@@ -307,6 +310,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				if (requiredType != null) {
 					beanCreation.tag("beanType", requiredType::toString);
 				}
+				//获取bean的BeanDefinition
 				RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
 				checkMergedBeanDefinition(mbd, beanName, args);
 
@@ -329,6 +333,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					}
 				}
 
+
+				//这里本容器创建单例bean
 				// Create bean instance.
 				if (mbd.isSingleton()) {
 					sharedInstance = getSingleton(beanName, () -> {
@@ -345,7 +351,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					});
 					beanInstance = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
 				}
-
+				//这里处理原型类型
 				else if (mbd.isPrototype()) {
 					// It's a prototype -> create a new instance.
 					Object prototypeInstance = null;
@@ -358,7 +364,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					}
 					beanInstance = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
 				}
-
+				//处理其它几种scope类型
 				else {
 					String scopeName = mbd.getScope();
 					if (!StringUtils.hasLength(scopeName)) {

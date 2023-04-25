@@ -1,5 +1,6 @@
 package org.springframework.liuyn.bean;
 
+
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.stereotype.Component;
 

@@ -527,6 +527,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
+			//给BeanPostProcessors机会去返回一个代理类而不是目标类的实例
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
@@ -538,6 +539,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					"BeanPostProcessor before instantiation of bean failed", ex);
 		}
 
+		//此处真正的创建bean
 		try {
 			Object beanInstance = doCreateBean(beanName, mbdToUse, args);
 			if (logger.isTraceEnabled()) {
@@ -613,10 +615,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 
-		// Initialize the bean instance.
+		// Initialize the bean instance. 初始化bean，BeanPostProcessors前置执行时机也在这里
 		Object exposedObject = bean;
 		try {
+			//填充bean
 			populateBean(beanName, mbd, instanceWrapper);
+
+			//初始化bean
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		}
 		catch (Throwable ex) {
@@ -1781,6 +1786,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see #applyBeanPostProcessorsAfterInitialization
 	 */
 	protected Object initializeBean(String beanName, Object bean, @Nullable RootBeanDefinition mbd) {
+
+		//这里处理Aware如BeanNameAware、BeanClassLoaderAware、BeanFactoryAware
 		if (System.getSecurityManager() != null) {
 			AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
 				invokeAwareMethods(beanName, bean);
@@ -1791,12 +1798,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			invokeAwareMethods(beanName, bean);
 		}
 
+		//这里执行beanPostprocess的前置处理方法
 		Object wrappedBean = bean;
 		if (mbd == null || !mbd.isSynthetic()) {
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 
 		try {
+			//处理init-method,如实现了InitializingBean的就执行afterPropertiesSet方法，或者从beanDefinition拿到init-method反射执行
 			invokeInitMethods(beanName, wrappedBean, mbd);
 		}
 		catch (Throwable ex) {
@@ -1804,6 +1813,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					(mbd != null ? mbd.getResourceDescription() : null),
 					beanName, "Invocation of init method failed", ex);
 		}
+		//这里再执行beanPostProcess的后置方法
 		if (mbd == null || !mbd.isSynthetic()) {
 			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
 		}

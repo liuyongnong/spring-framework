@@ -2,11 +2,13 @@ package org.springframework.liuyn.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.annotation.Order;
 import org.springframework.liuyn.bean.UserDao;
 
 @org.springframework.context.annotation.Configuration
 @ComponentScan(value = "org.springframework.liuyn.*")
+@EnableAspectJAutoProxy
 @Order(value = 1)
 public class Configuration {
 
